@@ -18,16 +18,31 @@ export async function POST(req: Request) {
         userId: session.user.id,
       },
     });
-    if (subscriptionExists) {
-      return new Response("You are already subscribed to this subreddit.", {
+    if (!subscriptionExists) {
+      return new Response("You are not subscribed to this subreddit.", {
         status: 400,
       });
     }
 
-    await db.subscription.create({
-      data: {
-        subredditId,
-        userId: session.user.id,
+    const subreddit = await db.subreddit.findFirst({
+      where: {
+        id: subredditId,
+        creatorId: session.user.id,
+      },
+    });
+
+    if (subreddit) {
+      return new Response("You cannot unsubscribe from your own subreddit", {
+        status: 400,
+      });
+    }
+
+    await db.subscription.delete({
+      where: {
+        userId_subredditId: {
+          subredditId,
+          userId: session.user.id,
+        },
       },
     });
 
@@ -37,7 +52,7 @@ export async function POST(req: Request) {
       return new Response("Invalid request data sent", { status: 422 });
     }
 
-    return new Response("Could not subscribe. Please try again later", {
+    return new Response("Could not unsubscribe. Please try again later", {
       status: 500,
     });
   }

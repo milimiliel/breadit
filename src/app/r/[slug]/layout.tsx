@@ -94,6 +94,7 @@ const Layout = async ({
                 <SubscribeLeaveToggle
                   subredditId={subreddit.id}
                   subredditName={subreddit.name}
+                  isSubscribed={isSubscribed}
                 />
               ) : null}
             </dl>
