@@ -151,7 +151,7 @@ const Editor: FC<EditorProps> = ({ subredditId }) => {
     const payload: PostCreationRequest = {
       title: data.title,
       content: blocks,
-      subredditId: subredditId,
+      subredditId,
     };
 
     createPost(payload);
@@ -176,11 +176,7 @@ const Editor: FC<EditorProps> = ({ subredditId }) => {
       <form
         id="subreddit-post-form"
         className="w-fit"
-        onSubmit={() => {
-          handleSubmit((e) => {
-            onSubmit;
-          });
-        }}
+        onSubmit={handleSubmit(onSubmit)}
       >
         <div className="prose prose-stone dark:prose-invert">
           <TextareaAutosize
