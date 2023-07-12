@@ -8,15 +8,16 @@ import { useMutation } from "@tanstack/react-query";
 import axios, { AxiosError } from "axios";
 import { toast } from "@/hooks/use-toast";
 import { useCustomToast } from "@/hooks/use-custom-toast";
+import { CreateSubredditPayload } from "@/lib/validators/subreddit";
 
 const Page = () => {
-  const [input, setInput] = useState<string>("");
   const router = useRouter();
+  const [input, setInput] = useState<string>("");
   const { loginToast } = useCustomToast();
 
   const { mutate: createCommunity, isLoading } = useMutation({
     mutationFn: async () => {
-      const payload = {
+      const payload: CreateSubredditPayload = {
         name: input,
       };
       const { data } = await axios.post("/api/subreddit", payload);
@@ -50,6 +51,10 @@ const Page = () => {
       }
     },
     onSuccess: (data) => {
+      toast({
+        description: "Subreddit succesfully created!",
+        variant: "default",
+      });
       router.push(`/r/${data}`);
     },
   });
@@ -64,11 +69,11 @@ const Page = () => {
         <hr className="bg-zinc-500 h-px" />
 
         <div>
-          <p className="text-lg font-medium">name</p>
+          <p className="text-lg font-medium">Name</p>
           <p>Community names including capitalization cannot be changed.</p>
 
-          <div className="relative">
-            <p className="absolute text-sm left-0 inset-y-0 grid place-items-center text text-zinc-400">
+          <div className="relative mt-2">
+            <p className="absolute text-sm w-8 left-0 inset-y-0 grid place-items-center text text-zinc-400">
               r/
             </p>
             <Input
@@ -80,7 +85,11 @@ const Page = () => {
         </div>
 
         <div className="flex justify-end gap-4">
-          <Button variant="subtle" onClick={() => router.back()}>
+          <Button
+            disabled={isLoading}
+            variant="subtle"
+            onClick={() => router.back()}
+          >
             Cancel
           </Button>
           <Button
@@ -95,3 +104,5 @@ const Page = () => {
     </div>
   );
 };
+
+export default Page;
